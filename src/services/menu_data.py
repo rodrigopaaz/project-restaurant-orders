@@ -11,7 +11,7 @@ class MenuData:
         return list(self.dishes)
 
     def load_menu_data(self, source_path):
-        recipes = []
+        recipes = {}
         with open(source_path, newline='') as file:
             csv_file = csv.reader(file)
             next(csv_file)
@@ -19,13 +19,13 @@ class MenuData:
                 name, dish_price, ingredient_name, ingredient_quantity = items
                 ingredient_quantity = int(ingredient_quantity)
 
-                dish = next((recipe for recipe in recipes if
-                             recipe.name == name), None)
-                if dish is None:
+                if name not in recipes:
                     dish = Dish(name, float(dish_price))
-                    recipes.append(dish)
+                    recipes[name] = dish
+                else:
+                    dish = recipes[name]
 
                 ingredient = Ingredient(ingredient_name)
                 dish.add_ingredient_dependency(ingredient, ingredient_quantity)
 
-        return recipes
+        return list(recipes.values())
